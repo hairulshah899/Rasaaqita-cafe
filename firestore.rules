@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User profiles
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Inspection reports (BOS, MOS, EOS)
+    match /reports/{reportId} {
+      allow read, write: if true;
+    }
+
+    // System audit logs
+    match /auditLogs/{logId} {
+      allow read, write: if true;
+    }
+
+    // Outlets metadata and temperature configurations
+    match /outlets/{outletId} {
+      allow read, write: if true;
+    }
+  }
+}

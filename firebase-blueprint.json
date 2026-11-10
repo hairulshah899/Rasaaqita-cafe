@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing authentication details, operational role, and assigned outlet",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "Full name of staff or supervisor" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "role": { "type": "string", "enum": ["staff", "supervisor", "admin"], "description": "Access level role" },
+        "outletId": { "type": "string", "description": "Assigned outlet ID or 'all'" }
+      },
+      "required": ["uid", "name", "email", "role", "outletId"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "Daily operational inspection report for BOS, MOS, or EOS session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Report document ID" },
+        "outletId": { "type": "string", "description": "Target outlet ID" },
+        "session": { "type": "string", "enum": ["BOS", "MOS", "EOS"], "description": "Inspection shift session" },
+        "date": { "type": "string", "description": "Inspection date in YYYY-MM-DD" },
+        "time": { "type": "string", "description": "Submission time" },
+        "staffId": { "type": "string", "description": "UID of submitting staff" },
+        "staffName": { "type": "string", "description": "Name of submitting staff" },
+        "status": { "type": "string", "enum": ["Draf", "Dihantar", "Disahkan", "Perlu Pembetulan"], "description": "Review status" },
+        "score": { "type": "number", "description": "Compliance score percentage" },
+        "answers": { "type": "object", "description": "12 Critical points answers map" },
+        "supervisorNotes": { "type": "string", "description": "Supervisor feedback" },
+        "supervisorName": { "type": "string", "description": "Reviewing supervisor name" },
+        "reviewedAt": { "type": "string", "description": "Review timestamp" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of creation" }
+      },
+      "required": ["outletId", "session", "date", "staffId", "staffName", "status", "score", "answers"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System event audit trail record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Log ID" },
+        "timestamp": { "type": "string", "description": "Human readable event time" },
+        "user": { "type": "string", "description": "Name of user who triggered the action" },
+        "role": { "type": "string", "description": "Role of user" },
+        "action": { "type": "string", "description": "Event description" },
+        "outletName": { "type": "string", "description": "Relevant outlet name if any" }
+      },
+      "required": ["timestamp", "user", "role", "action"]
+    },
+    "Outlet": {
+      "title": "Outlet",
+      "description": "Official Rasaaqita cafe branch configuration and temperature thresholds",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Outlet ID" },
+        "name": { "type": "string", "description": "Branch name" },
+        "location": { "type": "string", "description": "Branch physical location" },
+        "code": { "type": "string", "description": "Branch code (e.g. RQ-LKN)" },
+        "tempRange": { "type": "object", "description": "Chiller and freezer temperature ranges" },
+        "managerName": { "type": "string", "description": "Person-in-charge manager name" },
+        "phone": { "type": "string", "description": "Contact phone" }
+      },
+      "required": ["id", "name", "code", "tempRange"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Individual registered user account profiles"
+    },
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Daily inspection checklists and supervisor audits"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "System-wide activity audit trail logs"
+    },
+    "/outlets/{outletId}": {
+      "schema": "Outlet",
+      "description": "Outlet configurations and temperature limits"
+    }
+  }
+}

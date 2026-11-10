@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasaaqita Cafe Operations - Firebase Integrated</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasaa: {
+                            50: '#fdf8f6',
+                            100: '#fbe8e3',
+                            500: '#c55a30',
+                            600: '#b04922',
+                            700: '#923b1b',
+                            800: '#773117',
+                            900: '#5e2713',
+                            dark: '#3d180b'
+                        },
+                        rasaaccent: '#e07a5f'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .aspect-square-cam { aspect-ratio: 1 / 1; object-fit: cover; }
+    </style>
+</head>
+<body class="h-full text-gray-800 antialiased">
+
+    <div id="app" class="min-h-full flex flex-col">
+        <header id="main-header" class="bg-rasaa-900 text-white shadow-md hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center shadow">
+                        <img src="https://arleta.site/interactivelink/2841/Logo-Rasaaqita.jpeg" alt="Rasaaqita Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/40x40/5e2713/ffffff?text=R';">
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-wide">Rasaaqita Cafe Operations</h1>
+                        <p class="text-xs text-rasaa-100" id="header-user-info">Memuatkan sesi...</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="connection-badge" class="bg-emerald-500 text-xs px-2.5 py-1 rounded-full font-semibold uppercase text-white">Firebase Sedia</span>
+                    <button onclick="handleLogout()" class="bg-rasaa-800 hover:bg-rasaa-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden sm:inline">Log Keluar</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col">
+            <div id="view-loading" class="flex-1 flex flex-col items-center justify-center p-8">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-rasaa-600 mb-4"></div>
+                <p class="text-gray-600 font-medium">Menghubungkan ke pelayan Firebase & memulakan sistem...</p>
+            </div>
+
+            <!-- Login View -->
+            <div id="view-login" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-rasaa-900 via-rasaa-800 to-gray-900 hidden">
+                <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden p-8">
+                    <div class="text-center mb-6">
+                        <div class="inline-block w-16 h-16 rounded-2xl overflow-hidden shadow-md mb-3 bg-rasaa-50 p-1">
+                            <img src="https://arleta.site/interactivelink/2841/Logo-Rasaaqita.jpeg" alt="Rasaaqita Logo" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/60x60/5e2713/ffffff?text=R';">
+                        </div>
+                        <h2 id="auth-form-title" class="text-2xl font-bold text-gray-900">Log Masuk Rasmi</h2>
+                        <p id="auth-form-subtitle" class="text-sm text-gray-500 mt-1">Sistem Pemantauan Operasi Kafe Berbilang Outlet</p>
+                    </div>
+
+                    <div id="login-error" class="hidden mb-4 bg-red-50 border-l-4 border-red-500 p-3 text-sm text-red-700 rounded"></div>
+
+                    <form id="login-form" onsubmit="submitAuthForm(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Username or email address</label>
+                            <input type="text" id="login-email" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rasaa-500 focus:outline-none text-sm bg-gray-50" placeholder="cth: staf@rasaaqita.com">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-gray-700">Password</label>
+                                <a href="#" onclick="showMsg('Pemulihan', 'Sila hubungi admin sistem untuk menetapkan semula kata laluan.', 'info')" class="text-xs text-rasaa-700 hover:underline">Forgot password?</a>
+                            </div>
+                            <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rasaa-500 focus:outline-none text-sm bg-gray-50" placeholder="••••••••">
+                        </div>
+                        <button type="submit" id="auth-submit-btn" class="w-full bg-[#2da44e] hover:bg-[#2c974b] text-white font-semibold py-3 rounded-lg transition shadow-lg">
+                            Sign in
+                        </button>
+                    </form>
+
+                    <div class="relative flex py-4 items-center">
+                        <div class="flex-grow border-t border-gray-200"></div>
+                        <span class="flex-shrink mx-4 text-xs text-gray-400 uppercase">or</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+
+                    <!-- Social Logins -->
+                    <div class="space-y-3">
+                        <button type="button" onclick="handleGoogleSignIn()" class="w-full flex items-center justify-center gap-3 bg-gray-900 hover:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-sm text-sm">
+                            <i class="fa-brands fa-google text-red-400"></i>
+                            <span>Continue with Google</span>
+                        </button>
+                        <button type="button" onclick="handleAppleSignIn()" class="w-full flex items-center justify-center gap-3 bg-gray-900 hover:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-sm text-sm">
+                            <i class="fa-brands fa-apple text-white"></i>
+                            <span>Continue with Apple</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button type="button" onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-xs text-gray-600 hover:text-gray-900">
+                            New to Rasaaqita? <span class="text-rasaa-700 font-semibold underline">Create an account</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Dashboard View -->
+            <div id="view-staff" class="flex-1 flex flex-col hidden bg-gray-50">
+                <div class="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <span class="bg-rasaa-100 text-rasaa-800 text-xs font-semibold px-2.5 py-1 rounded-full uppercase">Paparan Staf Operasi</span>
+                            <h2 class="text-xl font-bold text-gray-900 mt-1" id="staff-welcome-name">Selamat Datang, Staf</h2>
+                            <p class="text-sm text-gray-500">Outlet Ditugaskan: <span id="staff-outlet-name" class="font-semibold text-gray-700">-</span></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="staff-sessions-grid">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-rasaa-600"></i> Sejarah Penghantaran Harian</h3>
+                            <button onclick="loadStaffData()" class="text-rasaa-600 hover:text-rasaa-800 text-sm font-medium"><i class="fa-solid fa-rotate"></i> Muat Semula</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                                        <th class="p-3 pl-6">Sesi</th>
+                                        <th class="p-3">Tarikh</th>
+                                        <th class="p-3">Skor Pematuhan</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3">Catatan Penyelia</th>
+                                        <th class="p-3 pr-6 text-right">Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-history-tbody" class="divide-y divide-gray-200">
+                                    <!-- Rows inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supervisor Dashboard View -->
+            <div id="view-supervisor" class="flex-1 flex flex-col hidden bg-gray-50">
+                <div class="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200 flex justify-between items-center">
+                        <div>
+                            <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-full uppercase">Paparan Penyelia</span>
+                            <h2 class="text-xl font-bold text-gray-900 mt-1">Semakan & Pengesahan Laporan Outlet Seliaan</h2>
+                        </div>
+                        <button onclick="loadSupervisorData()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition">
+                            <i class="fa-solid fa-rotate mr-1"></i> Segar Semula
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Tapis Outlet</label>
+                            <select id="sup-filter-outlet" onchange="filterSupervisorReports()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="">Semua Outlet Seliaan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Tapis Sesi</label>
+                            <select id="sup-filter-session" onchange="filterSupervisorReports()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="">Semua Sesi</option>
+                                <option value="BOS">BOS (Sebelum)</option>
+                                <option value="MOS">MOS (Semasa)</option>
+                                <option value="EOS">EOS (Penutupan)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Tapis Status</label>
+                            <select id="sup-filter-status" onchange="filterSupervisorReports()" class="w-full p-2.5 border rounded-lg text-sm bg-gray-50">
+                                <option value="Dihantar">Menunggu Semakan (Dihantar)</option>
+                                <option value="Disahkan">Disahkan</option>
+                                <option value="Perlu Pembetulan">Perlu Pembetulan</option>
+                                <option value="Semua">Semua Status</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-clipboard-check mr-2 text-amber-600"></i> Senarai Laporan Masuk</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                                        <th class="p-3 pl-6">Outlet</th>
+                                        <th class="p-3">Sesi & Tarikh</th>
+                                        <th class="p-3">Staf Pelapor</th>
+                                        <th class="p-3">Skor</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3 pr-6 text-right">Tindakan Semakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sup-reports-tbody" class="divide-y divide-gray-200">
+                                    <!-- Rows inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard View -->
+            <div id="view-admin" class="flex-1 flex flex-col hidden bg-gray-50">
+                <div class="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
+                    <div class="flex space-x-2 border-b border-gray-200 mb-6 overflow-x-auto pb-2">
+                        <button onclick="switchAdminTab('overview')" id="admin-tab-overview" class="admin-tab-btn px-4 py-2 bg-rasaa-700 text-white rounded-lg text-sm font-semibold transition whitespace-nowrap">
+                            <i class="fa-solid fa-chart-pie mr-2"></i> Ringkasan Eksekutif
+                        </button>
+                        <button onclick="switchAdminTab('outlets')" id="admin-tab-outlets" class="admin-tab-btn px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 rounded-lg text-sm font-semibold transition whitespace-nowrap border border-gray-200">
+                            <i class="fa-solid fa-store mr-2"></i> Pengurusan Outlet
+                        </button>
+                        <button onclick="switchAdminTab('users')" id="admin-tab-users" class="admin-tab-btn px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 rounded-lg text-sm font-semibold transition whitespace-nowrap border border-gray-200">
+                            <i class="fa-solid fa-users-gear mr-2"></i> Pengguna & Peranan
+                        </button>
+                        <button onclick="switchAdminTab('reports')" id="admin-tab-reports" class="admin-tab-btn px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 rounded-lg text-sm font-semibold transition whitespace-nowrap border border-gray-200">
+                            <i class="fa-solid fa-file-lines mr-2"></i> Laporan & Audit
+                        </button>
+                    </div>
+
+                    <div id="admin-content-overview" class="space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="admin-summary-cards">
+                            <!-- Cards inserted here -->
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-calendar-day mr-2 text-rasaa-600"></i> Status Operasi Hari Ini Mengikut Outlet</h3>
+                                <span class="text-xs text-gray-500" id="current-date-label">-</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
+                                    <thead>
+                                        <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                                            <th class="p-3 pl-6">Outlet</th>
+                                            <th class="p-3 text-center">BOS</th>
+                                            <th class="p-3 text-center">MOS</th>
+                                            <th class="p-3 text-center">EOS</th>
+                                            <th class="p-3 text-center">Skor Pematuhan</th>
+                                            <th class="p-3 pr-6 text-center">Isu Terbuka</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-outlet-status-tbody" class="divide-y divide-gray-200">
+                                        <!-- Populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-content-outlets" class="space-y-6 hidden">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-900">Senarai 4 Cawangan Rasmi Rasaaqita</h3>
+                                <p class="text-sm text-gray-500">KPJ Larkin, KPJ Bandar Dato On, Central Kitchen, Kiosk RnR Gombak.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="admin-outlets-grid">
+                            <!-- Populated -->
+                        </div>
+                    </div>
+
+                    <div id="admin-content-users" class="space-y-6 hidden">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-900">Pengurusan Profil & Penugasan Peranan</h3>
+                                <p class="text-sm text-gray-500">Kawalan akses ketat Staf, Penyelia dan Admin.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
+                                    <thead>
+                                        <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                                            <th class="p-3 pl-6">Nama / Emel</th>
+                                            <th class="p-3">Peranan</th>
+                                            <th class="p-3">Outlet Ditugaskan</th>
+                                            <th class="p-3 pr-6 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-users-tbody" class="divide-y divide-gray-200">
+                                        <!-- Populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-content-reports" class="space-y-6 hidden">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center flex-wrap gap-4">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-900">Eksport Laporan & Jejak Audit</h3>
+                                <p class="text-sm text-gray-500">Muat turun data pematuhan rasmi untuk arkib.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="exportCSV()" class="bg-rasaa-700 hover:bg-rasaa-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                                    <i class="fa-solid fa-file-csv mr-1"></i> Eksport CSV
+                                </button>
+                                <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                                    <i class="fa-solid fa-print mr-1"></i> Cetak / PDF
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-6">
+                            <h4 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-shield-cat mr-2 text-rasaa-600"></i> Jejak Audit Sistem Terkini</h4>
+                            <div class="space-y-3 max-h-96 overflow-y-auto" id="audit-logs-container">
+                                <!-- Populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: Role & Outlet Selection Popup for New Users -->
+    <div id="modal-role-select" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-8 text-center">
+            <div class="inline-block w-14 h-14 rounded-2xl overflow-hidden shadow mb-3 bg-rasaa-50 p-1">
+                <img src="https://arleta.site/interactivelink/2841/Logo-Rasaaqita.jpeg" alt="Rasaaqita Logo" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/50x50/5e2713/ffffff?text=R';">
+            </div>
+            <h3 class="font-bold text-xl text-gray-900 mb-2">Pilih Peranan & Cawangan</h3>
+            <p class="text-sm text-gray-600 mb-6">Sila tentukan sama ada akaun anda bertindak sebagai staf atau penyelia berserta nama cawangan.</p>
+            
+            <form id="role-select-form" onsubmit="submitRoleAndOutlet(event)" class="space-y-4 text-left mb-6">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Peranan Akaun</label>
+                    <select id="modal-role-input" class="w-full px-3 py-2.5 border rounded-lg text-sm bg-gray-50 font-medium">
+                        <option value="staff">Pekerja (Staf Operasi)</option>
+                        <option value="supervisor">Penyelia (Supervisor)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Nama Cawangan (Outlet)</label>
+                    <select id="modal-outlet-input" class="w-full px-3 py-2.5 border rounded-lg text-sm bg-gray-50 font-medium">
+                        <option value="outlet-1">KPJ Larkin</option>
+                        <option value="outlet-2">KPJ Bandar Dato On</option>
+                        <option value="outlet-3">Central Kitchen</option>
+                        <option value="outlet-4">Kiosk RnR Gombak</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3 bg-[#2da44e] hover:bg-[#2c974b] text-white rounded-xl font-semibold transition shadow">
+                    Sahkan & Teruskan
+                </button>
+            </form>
+            <button type="button" onclick="closeRoleModal()" class="text-xs text-gray-500 hover:text-gray-700 underline">Batal</button>
+        </div>
+    </div>
+
+    <!-- MODAL: Checklist / Inspection Form -->
+    <div id="modal-checklist" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-rasaa-900 text-white px-6 py-4 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-lg" id="modal-checklist-title">Pemeriksaan Sesi BOS</h3>
+                    <p class="text-xs text-rasaa-100" id="modal-checklist-subtitle">Lengkapkan 12 Titik Kritikal Operasi</p>
+                </div>
+                <button onclick="closeChecklistModal()" class="text-rasaa-100 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-6" id="checklist-items-container">
+                <!-- 12 Critical points inserted by JS -->
+            </div>
+            <div class="px-6 py-4 bg-gray-100 border-t border-gray-200 flex justify-between items-center">
+                <span class="text-xs text-gray-500 font-medium">Semua item wajib dilengkapkan mengikut SOP.</span>
+                <div class="flex gap-3">
+                    <button onclick="saveChecklistDraft()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Simpan Draf</button>
+                    <button onclick="submitChecklistFinal()" class="bg-rasaa-700 hover:bg-rasaa-800 text-white px-5 py-2 rounded-lg text-sm font-semibold transition shadow">Hantar Rasmi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Supervisor Review & Approval -->
+    <div id="modal-supervisor-review" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-amber-600 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg">Semakan Laporan Staf</h3>
+                <button onclick="closeSupervisorModal()" class="text-amber-100 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-6" id="supervisor-review-content">
+                <!-- Details & Responses -->
+            </div>
+            <div class="px-6 py-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="w-full sm:w-auto flex-1">
+                    <input type="text" id="sup-review-notes" placeholder="Catatan semakan / arahan pembetulan wajib diisi..." class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="processSupervisorDecision('Perlu Pembetulan')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Pulangkan</button>
+                    <button onclick="processSupervisorDecision('Disahkan')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Sahkan Laporan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: General Message Box -->
+    <div id="modal-msg" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-6 text-center">
+            <div id="msg-icon" class="text-4xl mb-3 text-rasaa-600"><i class="fa-solid fa-circle-info"></i></div>
+            <h4 class="font-bold text-lg text-gray-900 mb-2" id="msg-title">Mesej Sistem</h4>
+            <p class="text-sm text-gray-600 mb-6" id="msg-body">Penerangan mesej...</p>
+            <button onclick="closeMsgModal()" class="w-full bg-rasaa-700 hover:bg-rasaa-800 text-white py-2 rounded-lg text-sm font-semibold transition">Tutup</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, OAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, getDocs, updateDoc, query, where, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJNPh8I0u4LstomH2dVHHzs2h8gI2NA2U",
+            authDomain: "cafe-operation.firebaseapp.com",
+            databaseURL: "https://cafe-operation-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cafe-operation",
+            storageBucket: "cafe-operation.firebasestorage.app",
+            messagingSenderId: "392425037325",
+            appId: "1:392425037325:web:d0f2369e442da9cdbf3f44",
+            measurementId: "G-L3RPVCFSGW"
+        };
+
+        let app, auth, db, storage, googleProvider, appleProvider;
+        let isFirebaseActive = true;
+        let pendingAuthUser = null;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            storage = getStorage(app);
+            googleProvider = new GoogleAuthProvider();
+            appleProvider = new OAuthProvider('apple.com');
+            console.log("Firebase initialized successfully with project:", firebaseConfig.projectId);
+        } catch (e) {
+            console.error("Firebase initialization warning:", e);
+            isFirebaseActive = false;
+        }
+
+        const OFFICIAL_OUTLETS = [
+            { id: 'outlet-1', name: 'KPJ Larkin', tempRange: { chiller: {min:2, max:4}, freezer: {min:-20, max:-15} } },
+            { id: 'outlet-2', name: 'KPJ Bandar Dato On', tempRange: { chiller: {min:2, max:4}, freezer: {min:-20, max:-15} } },
+            { id: 'outlet-3', name: 'Central Kitchen', tempRange: { chiller: {min:1, max:3}, freezer: {min:-22, max:-18} } },
+            { id: 'outlet-4', name: 'Kiosk RnR Gombak', tempRange: { chiller: {min:2, max:5}, freezer: {min:-18, max:-15} } }
+        ];
+
+        const CHECKLIST_ITEMS = [
+            { id: 1, name: 'Keadaan Dapur', type: 'general', desc: 'Kebersihan lantai, dinding dan susun atur peralatan memasak.' },
+            { id: 2, name: 'Hand wash area', type: 'general', desc: 'Bekalan sabun pencuci tangan, tisu dan air paip berfungsi.' },
+            { id: 3, name: 'sink/ washing area', type: 'general', desc: 'Kawasan sinki bersih, tiada sisa tersumbat dan saliran baik.' },
+            { id: 4, name: 'chiller 1 & 2', type: 'temp', desc: 'Pemeriksaan suhu chiller mengikut julat standard kelulusan.', unit: '°C' },
+            { id: 5, name: 'Freezer', type: 'temp', desc: 'Pemeriksaan suhu peti sejuk beku (freezer).', unit: '°C' },
+            { id: 6, name: 'Bain Marie', type: 'temp', desc: 'Suhu pemanas makanan hidangan panas beroperasi dengan betul.', unit: '°C' },
+            { id: 7, name: 'Food Display', type: 'general', desc: 'Kebersihan kabinet pameran makanan dan perlindungan kebersihan.' },
+            { id: 8, name: 'Dry Storage', type: 'general', desc: 'Stor kering teratur, bebas perosak dan susunan bertarikh.' },
+            { id: 9, name: 'Staf Uniform/ PPE', type: 'general', desc: 'Pemakaian apron, topi, kasut bertutup dan kebersihan diri staf.' },
+            { id: 10, name: 'Dining Area', type: 'general', desc: 'Kebersihan meja makan, kerusi dan kawasan pelanggan.' },
+            { id: 11, name: 'Waste Area', type: 'general', desc: 'Tong sampah tertutup, kawasan pembuangan sisa dicuci.' },
+            { id: 12, name: 'Fly Trap/ Pest control', type: 'general', desc: 'Perangkap lalat berfungsi dan tiada tanda kehadiran perosak.' }
+        ];
+
+        let appState = {
+            currentUser: null,
+            currentOutlet: 'outlet-1',
+            activeSessionType: 'BOS',
+            reports: [],
+            auditLogs: [],
+            usersList: [
+                { uid: 'u-staff', name: 'Staf Ahmad Larkin', email: 'staf@rasaaqita.com', role: 'staff', outletId: 'outlet-1' },
+                { uid: 'u-sup', name: 'Penyelia Siti', email: 'penyelia@rasaaqita.com', role: 'supervisor', outletId: 'outlet-1' },
+                { uid: 'u-admin', name: 'Admin Tuan Amir', email: 'admin@rasaaqita.com', role: 'admin', outletId: 'all' }
+            ]
+        };
+
+        window.onload = function() {
+            const badge = document.getElementById('connection-badge');
+            if (badge) {
+                if (isFirebaseActive) {
+                    badge.innerText = "Firebase Sedia";
+                    badge.className = "bg-emerald-500 text-xs px-2.5 py-1 rounded-full font-semibold uppercase text-white";
+                } else {
+                    badge.innerText = "Mod Demonstrasi (Offline)";
+                    badge.className = "bg-amber-500 text-xs px-2.5 py-1 rounded-full font-semibold uppercase text-white";
+                }
+            }
+
+            if (isFirebaseActive && auth) {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        await fetchUserProfileAndRoute(user);
+                    } else {
+                        showLoginView();
+                    }
+                });
+            } else {
+                showLoginView();
+            }
+        };
+
+        function showLoginView() {
+            const loadingView = document.getElementById('view-loading');
+            const loginView = document.getElementById('view-login');
+            if (loadingView) loadingView.classList.add('hidden');
+            if (loginView) loginView.classList.remove('hidden');
+        }
+
+        window.toggleAuthMode = function() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            if (!email || !password) {
+                showMsg('Makluman', 'Sila masukkan emel dan kata laluan terlebih dahulu sebelum mendaftar.', 'info');
+                return;
+            }
+            // Trigger registration flow via role modal
+            pendingAuthUser = { email: email, password: password, isEmailPassReg: true };
+            document.getElementById('modal-role-select').classList.remove('hidden');
+        }
+
+        window.closeRoleModal = function() {
+            document.getElementById('modal-role-select').classList.add('hidden');
+            pendingAuthUser = null;
+        }
+
+        window.submitRoleAndOutlet = async function(e) {
+            e.preventDefault();
+            const role = document.getElementById('modal-role-input').value;
+            const outletId = document.getElementById('modal-outlet-input').value;
+            document.getElementById('modal-role-select').classList.add('hidden');
+
+            if (pendingAuthUser) {
+                if (pendingAuthUser.isEmailPassReg) {
+                    try {
+                        const cred = await createUserWithEmailAndPassword(auth, pendingAuthUser.email, pendingAuthUser.password);
+                        await finalizeSocialOrRegisterUser(cred.user, role, outletId);
+                    } catch (err) {
+                        showMsg('Ralat Pendaftaran', err.message, 'error');
+                    }
+                } else {
+                    await finalizeSocialOrRegisterUser(pendingAuthUser, role, outletId);
+                }
+            }
+        }
+
+        window.handleGoogleSignIn = async function() {
+            await handleSocialSignIn(googleProvider);
+        }
+
+        window.handleAppleSignIn = async function() {
+            await handleSocialSignIn(appleProvider);
+        }
+
+        async function handleSocialSignIn(provider) {
+            const errDiv = document.getElementById('login-error');
+            if (errDiv) errDiv.classList.add('hidden');
+
+            if (isFirebaseActive && auth) {
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    const userDocRef = doc(db, "users", result.user.uid);
+                    const userSnap = await getDoc(userDocRef);
+                    if (userSnap.exists()) {
+                        await fetchUserProfileAndRoute(result.user);
+                    } else {
+                        pendingAuthUser = result.user;
+                        document.getElementById('modal-role-select').classList.remove('hidden');
+                    }
+                } catch (err) {
+                    console.warn("Social sign-in error:", err.message);
+                    if (errDiv) {
+                        errDiv.innerText = `Ralat Login Sosial: ${err.message}`;
+                        errDiv.classList.remove('hidden');
+                    }
+                }
+            } else {
+                showMsg('Mod Demo', 'Log masuk sosial simulasi aktif.', 'info');
+                pendingAuthUser = { uid: `social-${Date.now()}`, displayName: 'Pengguna Sosial', email: 'sosial@rasaaqita.com' };
+                document.getElementById('modal-role-select').classList.remove('hidden');
+            }
+        }
+
+        async function finalizeSocialOrRegisterUser(firebaseUser, selectedRole, selectedOutlet) {
+            try {
+                const userDocRef = doc(db, "users", firebaseUser.uid);
+                const fullName = firebaseUser.displayName || firebaseUser.email.split('@')[0];
+                const defaultProfile = {
+                    name: fullName,
+                    email: firebaseUser.email,
+                    role: selectedRole,
+                    outletId: selectedOutlet
+                };
+                await setDoc(userDocRef, defaultProfile);
+                appState.currentUser = { uid: firebaseUser.uid, ...defaultProfile };
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('main-header').classList.remove('hidden');
+                updateHeaderUserInfo();
+                routeUserDashboard();
+                logAudit(`Pengguna baharu ${fullName} (${selectedRole}) mendaftar akaun.`);
+                pendingAuthUser = null;
+                setupRealtimeListeners();
+            } catch (err) {
+                console.error("Gagal simpan profil Firestore:", err);
+                showMsg('Ralat', 'Gagal mendaftarkan profil pengguna ke pangkalan data.', 'error');
+            }
+        }
+
+        window.submitAuthForm = async function(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('login-email');
+            const passInput = document.getElementById('login-password');
+            const email = emailInput ? emailInput.value.trim() : '';
+            const pass = passInput ? passInput.value : '';
+
+            const errDiv = document.getElementById('login-error');
+            if (errDiv) errDiv.classList.add('hidden');
+
+            if (isFirebaseActive && auth) {
+                try {
+                    const cred = await signInWithEmailAndPassword(auth, email, pass);
+                    await fetchUserProfileAndRoute(cred.user);
+                    return;
+                } catch (err) {
+                    console.warn("Firebase Auth login error:", err.message);
+                    if (errDiv) {
+                        errDiv.innerText = `Ralat Login: ${err.message}. Jika pengguna baru, sila klik 'Create an account' di bawah.`;
+                        errDiv.classList.remove('hidden');
+                    }
+                    return;
+                }
+            }
+        }
+
+        async function fetchUserProfileAndRoute(firebaseUser) {
+            try {
+                const userDocRef = doc(db, "users", firebaseUser.uid);
+                const userSnap = await getDoc(userDocRef);
+                if (userSnap.exists()) {
+                    appState.currentUser = { uid: firebaseUser.uid, ...userSnap.data() };
+                } else {
+                    pendingAuthUser = firebaseUser;
+                    document.getElementById('modal-role-select').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('main-header').classList.remove('hidden');
+                updateHeaderUserInfo();
+                routeUserDashboard();
+                setupRealtimeListeners();
+            } catch (err) {
+                console.error("Gagal memuat profil pengguna Firestore:", err);
+                showMsg('Ralat Pangkalan Data', 'Gagal memuatkan profil pengguna daripada Firestore.', 'error');
+            }
+        }
+
+        function setupRealtimeListeners() {
+            if (!isFirebaseActive || !db) return;
+            try {
+                onSnapshot(collection(db, "reports"), (snapshot) => {
+                    appState.reports = [];
+                    snapshot.forEach(docSnap => {
+                        appState.reports.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    console.log("Realtime reports synchronized:", appState.reports.length);
+                    // Refresh current view
+                    if (appState.currentUser) {
+                        if (appState.currentUser.role === 'staff') renderStaffSessions();
+                        if (appState.currentUser.role === 'supervisor') filterSupervisorReports();
+                        if (appState.currentUser.role === 'admin') loadAdminOverview();
+                    }
+                }, (error) => {
+                    console.error("Firestore onSnapshot error:", error);
+                });
+            } catch (e) {
+                console.warn("Could not setup realtime listener:", e);
+            }
+        }
+
+        function updateHeaderUserInfo() {
+            const u = appState.currentUser;
+            if (!u) return;
+            const outletObj = OFFICIAL_OUTLETS.find(o => o.id === u.outletId);
+            const outletName = outletObj ? outletObj.name : 'Semua Outlet (Admin)';
+            const headerInfo = document.getElementById('header-user-info');
+            if (headerInfo) headerInfo.innerText = `${u.name} | Peranan: ${u.role.toUpperCase()} | Outlet: ${outletName}`;
+        }
+
+        window.handleLogout = async function() {
+            if (isFirebaseActive && auth) {
+                try {
+                    await signOut(auth);
+                } catch (err) {
+                    console.warn("Logout error:", err);
+                }
+            }
+            appState.currentUser = null;
+            document.getElementById('main-header').classList.add('hidden');
+            hideAllViews();
+            document.getElementById('view-login').classList.remove('hidden');
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) loginForm.reset();
+        }
+
+        function hideAllViews() {
+            const staff = document.getElementById('view-staff');
+            const sup = document.getElementById('view-supervisor');
+            const admin = document.getElementById('view-admin');
+            if (staff) staff.classList.add('hidden');
+            if (sup) sup.classList.add('hidden');
+            if (admin) admin.classList.add('hidden');
+        }
+
+        function routeUserDashboard() {
+            hideAllViews();
+            const role = appState.currentUser.role;
+            if (role === 'staff') {
+                document.getElementById('view-staff').classList.remove('hidden');
+                loadStaffData();
+            } else if (role === 'supervisor') {
+                document.getElementById('view-supervisor').classList.remove('hidden');
+                loadSupervisorData();
+            } else if (role === 'admin') {
+                document.getElementById('view-admin').classList.remove('hidden');
+                loadAdminData();
+            }
+        }
+
+        /* --- STAFF MODULE --- */
+        window.loadStaffData = function() {
+            const u = appState.currentUser;
+            const welcomeName = document.getElementById('staff-welcome-name');
+            if (welcomeName) welcomeName.innerText = `Selamat Datang, ${u.name}`;
+            
+            if (u && u.outletId) {
+                appState.currentOutlet = u.outletId;
+            }
+
+            const outletObj = OFFICIAL_OUTLETS.find(o => o.id === appState.currentOutlet);
+            const outletNameSpan = document.getElementById('staff-outlet-name');
+            if (outletNameSpan) outletNameSpan.innerText = outletObj ? outletObj.name : '-';
+
+            renderStaffSessions();
+            renderStaffHistory();
+        }
+
+        function renderStaffSessions() {
+            const grid = document.getElementById('staff-sessions-grid');
+            if (!grid) return;
+            const sessions = ['BOS', 'MOS', 'EOS'];
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            grid.innerHTML = '';
+            sessions.forEach(sess => {
+                const existing = appState.reports.find(r => r.outletId === appState.currentOutlet && r.session === sess && r.date === todayStr);
+                let statusText = 'Belum Mula';
+                let statusBadge = 'bg-gray-100 text-gray-700';
+                let actionBtnText = 'Mula Pemeriksaan';
+                let scoreDisplay = '-';
+
+                if (existing) {
+                    statusText = existing.status;
+                    scoreDisplay = `${existing.score}%`;
+                    if (existing.status === 'Dihantar') statusBadge = 'bg-blue-100 text-blue-800';
+                    if (existing.status === 'Disahkan') statusBadge = 'bg-emerald-100 text-emerald-800';
+                    if (existing.status === 'Perlu Pembetulan') statusBadge = 'bg-red-100 text-red-800';
+                    actionBtnText = existing.status === 'Perlu Pembetulan' ? 'Betulkan Laporan' : 'Lihat / Kemaskini';
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-bold text-lg text-rasaa-900">${sess} Sesi</span>
+                                <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${statusBadge}">${statusText}</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-4">${getSessionDescription(sess)}</p>
+                            <div class="text-sm font-medium text-gray-700 mb-2">Skor Pematuhan: <span class="font-bold text-rasaa-700">${scoreDisplay}</span></div>
+                        </div>
+                        <button onclick="openChecklistModal('${sess}')" class="w-full bg-rasaa-50 hover:bg-rasaa-100 text-rasaa-800 border border-rasaa-200 py-2.5 rounded-lg text-sm font-semibold transition mt-4">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> ${actionBtnText}
+                        </button>
+                    </div>
+                `;
+            });
+            renderStaffHistory();
+        }
+
+        function getSessionDescription(sess) {
+            if (sess === 'BOS') return 'Sebelum Operasi - Pemeriksaan rapi bukaan awal harian.';
+            if (sess === 'MOS') return 'Semasa Operasi - Pemantauan tengah hari berterusan.';
+            return 'EOS - Penutupan Operasi & sanitasi akhir hari.';
+        }
+
+        function renderStaffHistory() {
+            const tbody = document.getElementById('staff-history-tbody');
+            if (!tbody) return;
+            const myReports = appState.reports.filter(r => r.outletId === appState.currentOutlet);
+
+            tbody.innerHTML = '';
+            if (myReports.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-500">Tiada rekod penghantaran untuk outlet ini.</td></tr>`;
+                return;
+            }
+
+            myReports.forEach(r => {
+                let badgeClass = 'bg-blue-100 text-blue-800';
+                if (r.status === 'Disahkan') badgeClass = 'bg-emerald-100 text-emerald-800';
+                if (r.status === 'Perlu Pembetulan') badgeClass = 'bg-red-100 text-red-800';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 pl-6 font-semibold text-rasaa-900">${r.session}</td>
+                        <td class="p-3 text-gray-600">${r.date}</td>
+                        <td class="p-3 font-medium text-gray-700">${r.score}%</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">${r.status}</span></td>
+                        <td class="p-3 text-gray-500 italic">${r.supervisorNotes || 'Tiada catatan'}</td>
+                        <td class="p-3 pr-6 text-right">
+                            <button onclick="openChecklistModal('${r.session}')" class="text-rasaa-600 hover:text-rasaa-800 font-semibold text-xs bg-rasaa-50 px-3 py-1.5 rounded border border-rasaa-200">Buka</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        let currentEditingAnswers = {};
+
+        window.openChecklistModal = function(sessionType) {
+            appState.activeSessionType = sessionType;
+            const titleElem = document.getElementById('modal-checklist-title');
+            const outletObj = OFFICIAL_OUTLETS.find(o => o.id === appState.currentOutlet);
+            if (titleElem) titleElem.innerText = `Pemeriksaan Sesi ${sessionType} - ${outletObj ? outletObj.name : ''}`;
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const existing = appState.reports.find(r => r.outletId === appState.currentOutlet && r.session === sessionType && r.date === todayStr);
+            
+            currentEditingAnswers = existing ? JSON.parse(JSON.stringify(existing.answers)) : {};
+
+            const container = document.getElementById('checklist-items-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            CHECKLIST_ITEMS.forEach(item => {
+                let ans = currentEditingAnswers[item.id] || { status: 'Patuh', temp: '', notes: '', image: '' };
+                currentEditingAnswers[item.id] = ans;
+
+                let tempInputHtml = '';
+                if (item.type === 'temp') {
+                    tempInputHtml = `
+                        <div class="mt-2 flex items-center gap-2">
+                            <label class="text-xs font-semibold text-gray-600">Bacaan Suhu (${item.unit}):</label>
+                            <input type="number" step="0.1" value="${ans.temp}" oninput="updateAnswerVal(${item.id}, 'temp', this.value)" placeholder="Cth: 3.2" class="w-32 px-3 py-1.5 border rounded text-sm bg-gray-50">
+                        </div>
+                    `;
+                }
+
+                let imagePreviewHtml = '';
+                if (ans.image) {
+                    imagePreviewHtml = `
+                        <div class="mt-2 flex items-center gap-3">
+                            <img src="${ans.image}" alt="Bukti 1:1" class="w-20 h-20 aspect-square-cam rounded-lg border shadow-sm object-cover">
+                            <button type="button" onclick="removeChecklistImage(${item.id})" class="text-xs text-red-600 hover:underline font-semibold"><i class="fa-solid fa-trash mr-1"></i> Buang Gambar</button>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-gray-800">${item.id}. ${item.name}</h4>
+                                <p class="text-xs text-gray-500">${item.desc}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="setChecklistStatus(${item.id}, 'Patuh')" id="btn-${item.id}-Patuh" class="px-3 py-1 rounded text-xs font-semibold ${ans.status === 'Patuh' ? 'bg-emerald-600 text-white shadow' : 'bg-white text-gray-700 border'}">Patuh</button>
+                                <button type="button" onclick="setChecklistStatus(${item.id}, 'Tidak Patuh')" id="btn-${item.id}-TidakPatuh" class="px-3 py-1 rounded text-xs font-semibold ${ans.status === 'Tidak Patuh' ? 'bg-red-600 text-white shadow' : 'bg-white text-gray-700 border'}">Tidak Patuh</button>
+                                <button type="button" onclick="setChecklistStatus(${item.id}, 'Tidak Berkenaan')" id="btn-${item.id}-TidakBerkenaan" class="px-3 py-1 rounded text-xs font-semibold ${ans.status === 'Tidak Berkenaan' ? 'bg-gray-600 text-white shadow' : 'bg-white text-gray-700 border'}">T/B</button>
+                            </div>
+                        </div>
+                        ${tempInputHtml}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+                            <input type="text" value="${ans.notes}" oninput="updateAnswerVal(${item.id}, 'notes', this.value)" placeholder="Catatan / Tindakan Pembetulan..." class="w-full px-3 py-1.5 border rounded text-sm bg-white">
+                            <div>
+                                <label class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-rasaa-50 hover:bg-rasaa-100 text-rasaa-700 border border-rasaa-200 rounded-lg text-xs font-semibold cursor-pointer transition">
+                                    <i class="fa-solid fa-camera text-sm"></i>
+                                    <span>Ambil Kamera (1:1)</span>
+                                    <input type="file" accept="image/*" capture="environment" onchange="handleImageCapture(event, ${item.id})" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                        <div id="preview-container-${item.id}">
+                            ${imagePreviewHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            const modalChecklist = document.getElementById('modal-checklist');
+            if (modalChecklist) modalChecklist.classList.remove('hidden');
+        }
+
+        window.setChecklistStatus = function(itemId, status) {
+            if (!currentEditingAnswers[itemId]) return;
+            currentEditingAnswers[itemId].status = status;
+            ['Patuh', 'Tidak Patuh', 'Tidak Berkenaan'].forEach(st => {
+                const btn = document.getElementById(`btn-${itemId}-${st.replace(' ', '')}`);
+                if (btn) {
+                    if (st === status) {
+                        btn.className = `px-3 py-1 rounded text-xs font-semibold ${st === 'Patuh' ? 'bg-emerald-600 text-white shadow' : st === 'Tidak Patuh' ? 'bg-red-600 text-white shadow' : 'bg-gray-600 text-white shadow'}`;
+                    } else {
+                        btn.className = 'px-3 py-1 rounded text-xs font-semibold bg-white text-gray-700 border';
+                    }
+                }
+            });
+        }
+
+        window.updateAnswerVal = function(itemId, field, val) {
+            if (currentEditingAnswers[itemId]) {
+                currentEditingAnswers[itemId][field] = val;
+            }
+        }
+
+        window.handleImageCapture = async function(e, itemId) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showMsg('Ralat Saiz', 'Fail gambar melebihi had 5MB.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const size = Math.min(img.width, img.height);
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    
+                    const offsetX = (img.width - size) / 2;
+                    const offsetY = (img.height - size) / 2;
+                    ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
+
+                    const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    currentEditingAnswers[itemId].image = croppedDataUrl;
+
+                    const container = document.getElementById(`preview-container-${itemId}`);
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="mt-2 flex items-center gap-3">
+                                <img src="${croppedDataUrl}" alt="Bukti 1:1" class="w-20 h-20 aspect-square-cam rounded-lg border shadow-sm object-cover">
+                                <button type="button" onclick="removeChecklistImage(${itemId})" class="text-xs text-red-600 hover:underline font-semibold"><i class="fa-solid fa-trash mr-1"></i> Buang Gambar</button>
+                            </div>
+                        `;
+                    }
+                    showMsg('Berjaya', 'Gambar 1:1 berjaya diambil.', 'success');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.removeChecklistImage = function(itemId) {
+            if (currentEditingAnswers[itemId]) {
+                currentEditingAnswers[itemId].image = '';
+                const container = document.getElementById(`preview-container-${itemId}`);
+                if (container) container.innerHTML = '';
+            }
+        }
+
+        window.closeChecklistModal = function() {
+            const modal = document.getElementById('modal-checklist');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        window.saveChecklistDraft = async function() {
+            await saveReportRecord('Draf');
+            showMsg('Berjaya', 'Draf pemeriksaan berjaya disimpan.', 'success');
+            closeChecklistModal();
+            loadStaffData();
+        }
+
+        window.submitChecklistFinal = async function() {
+            for (let id in currentEditingAnswers) {
+                let ans = currentEditingAnswers[id];
+                if (ans.status === 'Tidak Patuh' && !ans.notes) {
+                    showMsg('Validasi Gagal', `Catatan wajib diisi untuk item Tidak Patuh pada item #${id}`, 'error');
+                    return;
+                }
+            }
+            await saveReportRecord('Dihantar');
+            showMsg('Berjaya', 'Laporan rasmi berjaya dihantar kepada penyelia.', 'success');
+            closeChecklistModal();
+            loadStaffData();
+            logAudit(`Staf ${appState.currentUser.name} menghantar laporan sesi ${appState.activeSessionType}.`);
+        }
+
+        async function saveReportRecord(status) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const outletId = appState.currentOutlet;
+            const session = appState.activeSessionType;
+
+            let applicableCount = 0;
+            let compliantCount = 0;
+            for (let id in currentEditingAnswers) {
+                let st = currentEditingAnswers[id].status;
+                if (st !== 'Tidak Berkenaan') {
+                    applicableCount++;
+                    if (st === 'Patuh') compliantCount++;
+                }
+            }
+            const score = applicableCount > 0 ? Number(((compliantCount / applicableCount) * 100).toFixed(1)) : 0;
+
+            let existingIdx = appState.reports.findIndex(r => r.outletId === outletId && r.session === session && r.date === todayStr);
+            const reportObj = {
+                outletId,
+                session,
+                date: todayStr,
+                staffId: appState.currentUser.uid,
+                staffName: appState.currentUser.name,
+                status,
+                score,
+                answers: currentEditingAnswers,
+                supervisorNotes: existingIdx >= 0 ? appState.reports[existingIdx].supervisorNotes : '',
+                createdAt: new Date().toISOString()
+            };
+
+            if (isFirebaseActive && db) {
+                try {
+                    if (existingIdx >= 0 && appState.reports[existingIdx].id) {
+                        const repId = appState.reports[existingIdx].id;
+                        await updateDoc(doc(db, "reports", repId), reportObj);
+                        appState.reports[existingIdx] = { id: repId, ...reportObj };
+                    } else {
+                        const docRef = await addDoc(collection(db, "reports"), reportObj);
+                        appState.reports.push({ id: docRef.id, ...reportObj });
+                    }
+                } catch (e) {
+                    console.error("Gagal simpan ke Cloud Firestore:", e);
+                    showMsg('Ralat Firestore', 'Gagal menyimpan laporan ke pangkalan data cloud.', 'error');
+                }
+            } else {
+                if (existingIdx >= 0) {
+                    appState.reports[existingIdx] = { id: appState.reports[existingIdx].id, ...reportObj };
+                } else {
+                    appState.reports.push({ id: `rep-${Date.now()}`, ...reportObj });
+                }
+            }
+        }
+
+        /* --- SUPERVISOR MODULE --- */
+        let currentReviewReportId = null;
+
+        window.loadSupervisorData = function() {
+            const sel = document.getElementById('sup-filter-outlet');
+            if (sel) {
+                sel.innerHTML = '<option value="">Semua Outlet Seliaan</option>';
+                OFFICIAL_OUTLETS.forEach(o => {
+                    sel.innerHTML += `<option value="${o.id}">${o.name}</option>`;
+                });
+            }
+            filterSupervisorReports();
+        }
+
+        window.filterSupervisorReports = function() {
+            const outletFilterElem = document.getElementById('sup-filter-outlet');
+            const sessionFilterElem = document.getElementById('sup-filter-session');
+            const statusFilterElem = document.getElementById('sup-filter-status');
+
+            const outletFilter = outletFilterElem ? outletFilterElem.value : '';
+            const sessionFilter = sessionFilterElem ? sessionFilterElem.value : '';
+            const statusFilter = statusFilterElem ? statusFilterElem.value : 'Dihantar';
+
+            let filtered = appState.reports.filter(r => {
+                if (outletFilter && r.outletId !== outletFilter) return false;
+                if (sessionFilter && r.session !== sessionFilter) return false;
+                if (statusFilter !== 'Semua' && r.status !== statusFilter) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById('sup-reports-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-500">Tiada laporan dijumpai mengikut tapisan.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(r => {
+                const outletObj = OFFICIAL_OUTLETS.find(o => o.id === r.outletId);
+                let badgeClass = 'bg-blue-100 text-blue-800';
+                if (r.status === 'Disahkan') badgeClass = 'bg-emerald-100 text-emerald-800';
+                if (r.status === 'Perlu Pembetulan') badgeClass = 'bg-red-100 text-red-800';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 pl-6 font-semibold text-rasaa-900">${outletObj ? outletObj.name : r.outletId}</td>
+                        <td class="p-3">
+                            <span class="font-bold">${r.session}</span><br>
+                            <span class="text-xs text-gray-500">${r.date}</span>
+                        </td>
+                        <td class="p-3 text-gray-700">${r.staffName}</td>
+                        <td class="p-3 font-semibold text-rasaa-800">${r.score}%</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">${r.status}</span></td>
+                        <td class="p-3 pr-6 text-right">
+                            <button onclick="openSupervisorReviewModal('${r.id}')" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3 py-1.5 rounded text-xs font-semibold">Semak</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.openSupervisorReviewModal = function(reportId) {
+            currentReviewReportId = reportId;
+            const r = appState.reports.find(rep => rep.id === reportId);
+            if (!r) {
+                showMsg('Ralat', 'Laporan tidak dijumpai dalam memori. Sila muat semula.', 'error');
+                return;
+            }
+
+            const outletObj = OFFICIAL_OUTLETS.find(o => o.id === r.outletId);
+            const content = document.getElementById('supervisor-review-content');
+            if (!content) return;
+            
+            let html = `
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <h4 class="font-bold text-gray-900">Maklumat Laporan</h4>
+                    <p class="text-sm text-gray-600">Outlet: <span class="font-semibold">${outletObj ? outletObj.name : '-'}</span> | Sesi: <span class="font-semibold">${r.session}</span> | Skor: <span class="font-semibold text-rasaa-700">${r.score}%</span></p>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-bold text-gray-800">Butiran 12 Titik Kritikal:</h4>
+            `;
+
+            for (let id in r.answers) {
+                let ans = r.answers[id];
+                let itemInfo = CHECKLIST_ITEMS.find(i => i.id == id);
+                let badgeCol = ans.status === 'Patuh' ? 'text-emerald-700 bg-emerald-50' : ans.status === 'Tidak Patuh' ? 'text-red-700 bg-red-50' : 'text-gray-600 bg-gray-100';
+                
+                html += `
+                    <div class="p-3 bg-white rounded-lg border border-gray-200 text-sm flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-gray-800">${id}. ${itemInfo ? itemInfo.name : 'Item'}</span><br>
+                            <span class="text-xs text-gray-500">Catatan: ${ans.notes || 'Tiada'} ${ans.temp ? `| Suhu: ${ans.temp}°C` : ''}</span>
+                            ${ans.image ? `<div class="mt-2"><a href="${ans.image}" target="_blank"><img src="${ans.image}" class="w-20 h-20 aspect-square-cam rounded border object-cover shadow hover:opacity-90 transition" title="Klik untuk paparan penuh"></a></div>` : ''}
+                        </div>
+                        <span class="px-2.5 py-1 rounded text-xs font-bold ${badgeCol}">${ans.status}</span>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            content.innerHTML = html;
+            const reviewNotes = document.getElementById('sup-review-notes');
+            if (reviewNotes) reviewNotes.value = r.supervisorNotes || '';
+            const supModal = document.getElementById('modal-supervisor-review');
+            if (supModal) supModal.classList.remove('hidden');
+        }
+
+        window.closeSupervisorModal = function() {
+            const modal = document.getElementById('modal-supervisor-review');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        window.processSupervisorDecision = async function(decisionStatus) {
+            const notesElem = document.getElementById('sup-review-notes');
+            const notes = notesElem ? notesElem.value.trim() : '';
+            if (decisionStatus === 'Perlu Pembetulan' && !notes) {
+                showMsg('Ralat', 'Catatan semakan wajib diisi sekiranya dipulangkan.', 'error');
+                return;
+            }
+
+            let r = appState.reports.find(rep => rep.id === currentReviewReportId);
+            if (r) {
+                r.status = decisionStatus;
+                r.supervisorNotes = notes;
+                if (isFirebaseActive && db) {
+                    try {
+                        await updateDoc(doc(db, "reports", r.id), { status: decisionStatus, supervisorNotes: notes });
+                    } catch (e) {
+                        console.warn("Gagal kemaskini cloud report status:", e);
+                    }
+                }
+            }
+
+            closeSupervisorModal();
+            filterSupervisorReports();
+            showMsg('Berjaya', `Keputusan semakan: ${decisionStatus}`, 'success');
+            logAudit(`Penyelia ${appState.currentUser.name} mengesahkan laporan ${r ? r.session : ''} dengan status: ${decisionStatus}.`);
+        }
+
+        /* --- ADMIN MODULE --- */
+        window.switchAdminTab = function(tabName) {
+            ['overview', 'outlets', 'users', 'reports'].forEach(t => {
+                const contentElem = document.getElementById(`admin-content-${t}`);
+                const tabElem = document.getElementById(`admin-tab-${t}`);
+                if (contentElem) contentElem.classList.add('hidden');
+                if (tabElem) tabElem.className = 'admin-tab-btn px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 rounded-lg text-sm font-semibold transition whitespace-nowrap border border-gray-200';
+            });
+            const activeContent = document.getElementById(`admin-content-${tabName}`);
+            const activeTab = document.getElementById(`admin-tab-${tabName}`);
+            if (activeContent) activeContent.classList.remove('hidden');
+            if (activeTab) activeTab.className = 'admin-tab-btn px-4 py-2 bg-rasaa-700 text-white rounded-lg text-sm font-semibold transition whitespace-nowrap';
+
+            if (tabName === 'overview') loadAdminOverview();
+            if (tabName === 'outlets') loadAdminOutlets();
+            if (tabName === 'users') loadAdminUsers();
+            if (tabName === 'reports') loadAdminAuditLogs();
+        }
+
+        window.loadAdminData = function() {
+            switchAdminTab('overview');
+        }
+
+        function loadAdminOverview() {
+            const dateLabel = document.getElementById('current-date-label');
+            if (dateLabel) dateLabel.innerText = `Tarikh: ${new Date().toLocaleDateString()}`;
+            
+            let totalActiveOutlets = OFFICIAL_OUTLETS.length;
+            let pendingReviews = appState.reports.filter(r => r.status === 'Dihantar').length;
+            let totalSubmittedToday = appState.reports.length;
+
+            const cardsContainer = document.getElementById('admin-summary-cards');
+            if (cardsContainer) {
+                cardsContainer.innerHTML = `
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <p class="text-xs font-semibold uppercase text-gray-400">Outlet Aktif</p>
+                        <h3 class="text-2xl font-bold text-rasaa-900 mt-1">${totalActiveOutlets} / 4</h3>
+                        <p class="text-xs text-emerald-600 mt-1"><i class="fa-solid fa-circle-check"></i> Semua beroperasi</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <p class="text-xs font-semibold uppercase text-gray-400">Laporan Menunggu</p>
+                        <h3 class="text-2xl font-bold text-amber-600 mt-1">${pendingReviews}</h3>
+                        <p class="text-xs text-gray-500 mt-1">Perlu semakan segera</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <p class="text-xs font-semibold uppercase text-gray-400">Jumlah Penghantaran</p>
+                        <h3 class="text-2xl font-bold text-rasaa-700 mt-1">${totalSubmittedToday}</h3>
+                        <p class="text-xs text-gray-500 mt-1">Sesi BOS/MOS/EOS</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <p class="text-xs font-semibold uppercase text-gray-400">Purata Pematuhan</p>
+                        <h3 class="text-2xl font-bold text-emerald-700 mt-1">95.1%</h3>
+                        <p class="text-xs text-emerald-600 mt-1"><i class="fa-solid fa-arrow-trend-up"></i> Cemerlang</p>
+                    </div>
+                `;
+            }
+
+            const tbody = document.getElementById('admin-outlet-status-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            OFFICIAL_OUTLETS.forEach(o => {
+                const repBOS = appState.reports.find(r => r.outletId === o.id && r.session === 'BOS' && r.date === todayStr);
+                const repMOS = appState.reports.find(r => r.outletId === o.id && r.session === 'MOS' && r.date === todayStr);
+                const repEOS = appState.reports.find(r => r.outletId === o.id && r.session === 'EOS' && r.date === todayStr);
+
+                let avgScore = '-';
+                let scores = [repBOS?.score, repMOS?.score, repEOS?.score].filter(s => s !== undefined);
+                if (scores.length > 0) {
+                    let sum = scores.reduce((a, b) => a + b, 0);
+                    avgScore = `${(sum / scores.length).toFixed(1)}%`;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 pl-6 font-semibold text-rasaa-900">${o.name}</td>
+                        <td class="p-3 text-center">${getStatusBadgeIcon(repBOS?.status)}</td>
+                        <td class="p-3 text-center">${getStatusBadgeIcon(repMOS?.status)}</td>
+                        <td class="p-3 text-center">${getStatusBadgeIcon(repEOS?.status)}</td>
+                        <td class="p-3 text-center font-bold text-rasaa-700">${avgScore}</td>
+                        <td class="p-3 text-center"><span class="bg-gray-100 text-gray-700 text-xs px-2.5 py-1 rounded-full font-semibold">0 Isu</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function getStatusBadgeIcon(status) {
+            if (!status) return '<span class="text-gray-300"><i class="fa-solid fa-circle-minus"></i></span>';
+            if (status === 'Disahkan') return '<span class="text-emerald-600"><i class="fa-solid fa-circle-check"></i></span>';
+            if (status === 'Dihantar') return '<span class="text-blue-600"><i class="fa-solid fa-clock"></i></span>';
+            return '<span class="text-red-600"><i class="fa-solid fa-triangle-exclamation"></i></span>';
+        }
+
+        function loadAdminOutlets() {
+            const grid = document.getElementById('admin-outlets-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            OFFICIAL_OUTLETS.forEach(o => {
+                grid.innerHTML += `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h4 class="font-bold text-lg text-rasaa-900">${o.name}</h4>
+                        <p class="text-xs text-gray-500 mb-4">ID: ${o.id}</p>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p><i class="fa-solid fa-snowflake text-rasaa-600 mr-2"></i> Chiller: ${o.tempRange.chiller.min}°C - ${o.tempRange.chiller.max}°C</p>
+                            <p><i class="fa-solid fa-icicles text-rasaa-600 mr-2"></i> Freezer: ${o.tempRange.freezer.min}°C - ${o.tempRange.freezer.max}°C</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function loadAdminUsers() {
+            const tbody = document.getElementById('admin-users-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            appState.usersList.forEach(u => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 pl-6"><span class="font-bold">${u.name}</span><br><span class="text-xs text-gray-500">${u.email}</span></td>
+                        <td class="p-3"><span class="bg-rasaa-100 text-rasaa-800 px-2 py-0.5 rounded text-xs font-semibold uppercase">${u.role}</span></td>
+                        <td class="p-3 text-gray-700">${u.outletId}</td>
+                        <td class="p-3 pr-6 text-right text-emerald-600 text-xs font-bold">Aktif</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadAdminAuditLogs() {
+            const container = document.getElementById('audit-logs-container');
+            if (!container) return;
+            container.innerHTML = '';
+            appState.auditLogs.slice().reverse().forEach(log => {
+                container.innerHTML += `
+                    <div class="p-3 bg-gray-50 rounded-lg border text-sm flex justify-between items-center">
+                        <div><span class="font-bold">${log.user}</span>: ${log.action}</div>
+                        <span class="text-xs text-gray-400">${log.timestamp}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function logAudit(actionText) {
+            appState.auditLogs.push({
+                timestamp: new Date().toLocaleTimeString(),
+                user: appState.currentUser ? appState.currentUser.name : 'Sistem',
+                action: actionText
+            });
+        }
+
+        window.exportCSV = function() {
+            let csvContent = "data:text/csv;charset=utf-8,Outlet,Sesi,Tarikh,Staf,Skor,Status\n";
+            appState.reports.forEach(r => {
+                csvContent += `${r.outletId},${r.session},${r.date},${r.staffName},${r.score}%,${r.status}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "laporan_rasaaqita.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        window.showMsg = function(title, body, type = 'info') {
+            const titleElem = document.getElementById('msg-title');
+            const bodyElem = document.getElementById('msg-body');
+            const modalMsg = document.getElementById('modal-msg');
+            if (titleElem) titleElem.innerText = title;
+            if (bodyElem) bodyElem.innerText = body;
+            if (modalMsg) modalMsg.classList.remove('hidden');
+        }
+
+        window.closeMsgModal = function() {
+            const modalMsg = document.getElementById('modal-msg');
+            if (modalMsg) modalMsg.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

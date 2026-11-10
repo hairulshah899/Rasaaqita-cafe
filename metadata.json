@@ -1,0 +1,10 @@
+{
+  "name": "Rasaaqita Cafe Operations",
+  "description": "Sistem pemantauan operasi kafe berbilang outlet (KPJ Larkin, KPJ Bandar Dato On, Central Kitchen, Kiosk RnR Gombak) merangkumi pemeriksaan 12 titik kritikal sesi BOS, MOS, dan EOS.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
