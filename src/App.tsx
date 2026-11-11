@@ -17,6 +17,7 @@ import {
   INITIAL_USERS,
   INITIAL_REPORTS,
   INITIAL_AUDIT_LOGS,
+  isOwnerAdminEmail,
 } from './data/initialData';
 import {
   auth,
@@ -85,16 +86,16 @@ export default function App() {
     const unsubscribeAuth = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
         try {
-          const isOwner = fbUser.email?.trim().toLowerCase() === 'hairulshah899@gmail.com';
+          const isOwner = isOwnerAdminEmail(fbUser.email);
           const userRef = doc(db, 'users', fbUser.uid);
           const snap = await getDoc(userRef);
 
           if (isOwner) {
-            // hairulshah899@gmail.com is unconditionally the Owner / Admin
+            // Both hairulshah@gmail.com & hairulshah899@gmail.com are unconditionally the Owner / Admin
             const ownerProfile: UserProfile = {
               uid: fbUser.uid,
-              name: fbUser.displayName || 'Hairul Shah (Owner)',
-              email: fbUser.email || 'hairulshah899@gmail.com',
+              name: fbUser.displayName || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+              email: fbUser.email!,
               role: 'admin',
               outletId: 'all',
             };
@@ -105,7 +106,7 @@ export default function App() {
           } else if (snap.exists() && snap.data()?.role && snap.data()?.outletId) {
             const profile = snap.data() as UserProfile;
             // Ensure no unauthorized admin role
-            if (profile.role === 'admin' && profile.email?.trim().toLowerCase() !== 'hairulshah899@gmail.com') {
+            if (profile.role === 'admin' && !isOwnerAdminEmail(profile.email)) {
               profile.role = 'staff';
               await setDoc(userRef, { role: 'staff' }, { merge: true });
             }
@@ -258,7 +259,7 @@ export default function App() {
     if (!pendingNewUser) return;
     setIsSavingRole(true);
 
-    const isOwner = pendingNewUser.email.trim().toLowerCase() === 'hairulshah899@gmail.com';
+    const isOwner = isOwnerAdminEmail(pendingNewUser.email);
     const finalRole: UserRole = isOwner ? 'admin' : (role === 'admin' ? 'staff' : role);
     const finalOutlet: string = isOwner ? 'all' : outletId;
 
@@ -571,7 +572,7 @@ export default function App() {
   // Delete User from Cloud Firestore
   const handleDeleteUser = async (userId: string) => {
     const target = usersList.find((u) => u.uid === userId);
-    if (target?.email?.trim().toLowerCase() === 'hairulshah899@gmail.com' || target?.role === 'admin') {
+    if (isOwnerAdminEmail(target?.email) || target?.role === 'admin') {
       setNotification({
         title: 'Tindakan Disekat',
         message: 'Akaun Pemilik Utama (Admin) dilindungi dan tidak boleh dipadam.',
@@ -635,7 +636,7 @@ export default function App() {
     : undefined;
 
   return (
-    <div className="min-h-full flex flex-col bg-stone-50 text-stone-800">
+    <div className="min-h-full flex flex-col bg-stone-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 transition-colors duration-200">
       {/* Top Header - shown only when user is logged in */}
       {currentUser && (
         <Header

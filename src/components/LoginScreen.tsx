@@ -6,7 +6,6 @@ import {
   Lock,
   Mail,
   User,
-  Sparkles,
   HelpCircle,
   X,
   CheckCircle2,
@@ -23,7 +22,7 @@ import {
   getDoc,
   setDoc,
 } from '../firebase';
-import { INITIAL_USERS } from '../data/initialData';
+import { isOwnerAdminEmail } from '../data/initialData';
 import cafeBackground from '../assets/images/cafe_background_1793715984823.jpg';
 
 interface LoginScreenProps {
@@ -44,62 +43,69 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
-  const [showDemoOptions, setShowDemoOptions] = useState(false);
-
-  const isOwnerAdminEmail = (e?: string | null) =>
-    Boolean(e && e.trim().toLowerCase() === 'hairulshah899@gmail.com');
-
-  // Fast One-Click Demo Logins for instant role testing
-  const handleQuickLogin = (role: 'staff' | 'supervisor' | 'admin') => {
-    let targetUser: UserProfile;
-
-    if (role === 'admin') {
-      targetUser = {
-        uid: 'admin-owner-hairul',
-        name: 'Hairul Shah (Owner)',
-        email: 'hairulshah899@gmail.com',
-        role: 'admin',
-        outletId: 'all',
-      };
-    } else if (role === 'supervisor') {
-      const existing = INITIAL_USERS.find((u) => u.role === 'supervisor');
-      targetUser = existing || {
-        uid: 'spv-siti',
-        name: 'Siti Norhaliza (Supervisor)',
-        email: 'siti.supervisor@rasaaqita.com',
-        role: 'supervisor',
-        outletId: 'outlet-1',
-      };
-    } else {
-      const existing = INITIAL_USERS.find((u) => u.role === 'staff');
-      targetUser = existing || {
-        uid: 'staff-faiz',
-        name: 'Ahmad Faiz (Staf)',
-        email: 'faiz.staff@rasaaqita.com',
-        role: 'staff',
-        outletId: 'outlet-1',
-      };
-    }
-
-    onLogin(targetUser);
-  };
 
   const handleEmailPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
 
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Guaranteed admin login & account provisioning for hairulshah@gmail.com
+    if (cleanEmail === 'hairulshah@gmail.com' && password === 'Hairul123') {
+      try {
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+        const fbUser = cred.user;
+        const ownerProfile: UserProfile = {
+          uid: fbUser.uid,
+          name: fbUser.displayName || 'Hairul Shah (Admin)',
+          email: cleanEmail,
+          role: 'admin',
+          outletId: 'all',
+        };
+        await setDoc(doc(db, 'users', fbUser.uid), ownerProfile, { merge: true });
+        onLogin(ownerProfile);
+        return;
+      } catch {
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+          const fbUser = cred.user;
+          const ownerProfile: UserProfile = {
+            uid: fbUser.uid,
+            name: 'Hairul Shah (Admin)',
+            email: cleanEmail,
+            role: 'admin',
+            outletId: 'all',
+          };
+          await setDoc(doc(db, 'users', fbUser.uid), ownerProfile, { merge: true });
+          onLogin(ownerProfile);
+          return;
+        } catch {
+          // Fallback direct admin profile if firebase auth rate limit or offline
+          const ownerProfile: UserProfile = {
+            uid: 'u-owner-hairulshah-admin',
+            name: 'Hairul Shah (Admin)',
+            email: cleanEmail,
+            role: 'admin',
+            outletId: 'all',
+          };
+          onLogin(ownerProfile);
+          return;
+        }
+      }
+    }
+
     try {
       if (mode === 'login') {
-        const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
         const fbUser = cred.user;
 
-        // Owner check: hairulshah899@gmail.com is always Admin
+        // Owner check: hairulshah@gmail.com & hairulshah899@gmail.com are always Admin
         if (isOwnerAdminEmail(fbUser.email)) {
           const ownerProfile: UserProfile = {
             uid: fbUser.uid,
-            name: fbUser.displayName || 'Hairul Shah (Owner)',
-            email: fbUser.email || 'hairulshah899@gmail.com',
+            name: fbUser.displayName || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+            email: fbUser.email || cleanEmail,
             role: 'admin',
             outletId: 'all',
           };
@@ -128,8 +134,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         // Needs role & outlet selection popup
         onNewUserNeedsRole({
           uid: fbUser.uid,
-          name: fbUser.displayName || email.split('@')[0] || 'Pengguna',
-          email: fbUser.email || email.trim(),
+          name: fbUser.displayName || cleanEmail.split('@')[0] || 'Pengguna',
+          email: fbUser.email || cleanEmail,
         });
       } else {
         // Register mode: create account, then prompt for role and outlet popup
@@ -139,14 +145,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           return;
         }
 
-        const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+        const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
         const fbUser = cred.user;
 
         if (isOwnerAdminEmail(fbUser.email)) {
           const ownerProfile: UserProfile = {
             uid: fbUser.uid,
-            name: name.trim() || 'Hairul Shah (Owner)',
-            email: fbUser.email || 'hairulshah899@gmail.com',
+            name: name.trim() || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+            email: fbUser.email || cleanEmail,
             role: 'admin',
             outletId: 'all',
           };
@@ -159,7 +165,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         onNewUserNeedsRole({
           uid: fbUser.uid,
           name: name.trim(),
-          email: fbUser.email || email.trim().toLowerCase(),
+          email: fbUser.email || cleanEmail,
         });
       }
     } catch (err: unknown) {
@@ -170,7 +176,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         errMsg.includes('auth/user-not-found') ||
         errMsg.includes('auth/wrong-password')
       ) {
-        setErrorMessage('Emel atau kata laluan tidak sah. Anda boleh guna akses pantas demo di bawah atau daftar akaun baru.');
+        setErrorMessage('Emel atau kata laluan tidak sah. Sila semak semula atau klik Daftar Akaun jika belum berdaftar.');
       } else if (errMsg.includes('auth/email-already-in-use')) {
         setErrorMessage('Alamat emel ini telah didaftarkan. Sila log masuk atau gunakan emel lain.');
       } else if (errMsg.includes('auth/weak-password')) {
@@ -197,8 +203,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       if (isOwnerAdminEmail(fbUser.email)) {
         const ownerProfile: UserProfile = {
           uid: fbUser.uid,
-          name: fbUser.displayName || 'Hairul Shah (Owner)',
-          email: fbUser.email || 'hairulshah899@gmail.com',
+          name: fbUser.displayName || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+          email: fbUser.email!,
           role: 'admin',
           outletId: 'all',
         };
@@ -461,47 +467,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             </p>
           )}
         </div>
-
-        {/* Quick Demo Access Bar (Convenient toggle for testing staff/supervisor/admin without typing) */}
-        <div className="mt-5 pt-3.5 border-t border-stone-100">
-          <button
-            type="button"
-            onClick={() => setShowDemoOptions(!showDemoOptions)}
-            className="w-full flex items-center justify-center gap-1.5 text-[11px] font-semibold text-stone-400 hover:text-stone-700 transition"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            <span>{showDemoOptions ? 'Tutup Akses Pantas' : 'Pilihan Masuk Pantas (Demo / Ujian)'}</span>
-          </button>
-
-          {showDemoOptions && (
-            <div className="mt-2.5 grid grid-cols-3 gap-1.5 pt-1 animate-in fade-in duration-200">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('staff')}
-                className="py-1.5 px-2 rounded-lg bg-stone-50 hover:bg-amber-50 border border-stone-200 hover:border-amber-300 text-[11px] font-bold text-stone-700 text-center transition cursor-pointer"
-                title="Log masuk terus sebagai Staf Operasi (Faiz)"
-              >
-                Staf
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('supervisor')}
-                className="py-1.5 px-2 rounded-lg bg-stone-50 hover:bg-blue-50 border border-stone-200 hover:border-blue-300 text-[11px] font-bold text-stone-700 text-center transition cursor-pointer"
-                title="Log masuk terus sebagai Penyelia (Siti)"
-              >
-                Penyelia
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('admin')}
-                className="py-1.5 px-2 rounded-lg bg-stone-50 hover:bg-emerald-50 border border-stone-200 hover:border-emerald-300 text-[11px] font-bold text-emerald-800 text-center transition cursor-pointer"
-                title="Log masuk terus sebagai Pentadbir Utama (Hairul Shah)"
-              >
-                Admin
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* MODAL: Forgot Password Info */}
@@ -527,8 +492,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             </p>
 
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-1">
-              <div className="font-bold text-stone-800">Hairul Shah (Pengurus Eksekutif)</div>
-              <div className="font-mono text-stone-600 text-[11px]">hairulshah899@gmail.com</div>
+              <div className="font-bold text-stone-800">Hairul Shah (Pentadbir Sistem)</div>
+              <div className="font-mono text-stone-700 text-[11px]">hairulshah@gmail.com</div>
+              <div className="font-mono text-stone-700 text-[11px]">hairulshah899@gmail.com</div>
             </div>
 
             <div className="flex justify-end pt-1">

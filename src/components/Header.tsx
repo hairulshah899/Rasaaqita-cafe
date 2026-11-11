@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserProfile, Outlet } from '../types';
-import { LogOut, User, Store, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { LogOut, User, Store, ShieldCheck, CheckCircle2, Moon, Sun } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
   currentUser: UserProfile | null;
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   onSwitchUserClick,
 }) => {
+  const { isDark, toggleTheme } = useTheme();
   const getRoleLabel = (role?: string) => {
     switch (role) {
       case 'admin':
@@ -79,8 +81,29 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Zone 3: Actions & Logout */}
+        {/* Zone 3: Actions, Theme Toggle & Logout */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* Theme Toggle Button (Mod Gelap / Malam untuk staf cawangan) */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={isDark ? 'Tukar ke Mod Siang (Cerah)' : 'Tukar ke Mod Malam (Gelap)'}
+            aria-label={isDark ? 'Tukar ke Mod Siang' : 'Tukar ke Mod Malam'}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition cursor-pointer shadow-2xs"
+          >
+            {isDark ? (
+              <>
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline text-amber-200">Mod Siang</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 text-sky-300" />
+                <span className="hidden sm:inline text-stone-300">Mod Malam</span>
+              </>
+            )}
+          </button>
+
           {currentUser ? (
             <div className="flex items-center gap-2">
               <button

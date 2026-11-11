@@ -245,7 +245,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92vh] my-auto">
+      <div className="bg-white dark:bg-stone-900 w-full max-w-4xl rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col max-h-[92vh] my-auto transition-colors">
         {/* Header */}
         <div className="bg-[#5e2713] text-white px-6 py-4 flex items-center justify-between shrink-0">
           <div>
@@ -271,24 +271,24 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
         </div>
 
         {/* Live Score Strip */}
-        <div className="bg-stone-100 px-6 py-3 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2 text-xs text-stone-600">
-            <span className="font-semibold text-stone-800">Status Semasa:</span>
+        <div className="bg-stone-100 dark:bg-stone-900/90 px-6 py-3 border-b border-stone-200 dark:border-stone-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-2 text-xs text-stone-600 dark:text-stone-300">
+            <span className="font-semibold text-stone-800 dark:text-stone-200">Status Semasa:</span>
             <span>{compliantCount} Patuh</span>
-            <span className="text-stone-300">·</span>
-            <span className="text-rose-600 font-semibold">{nonCompliantCount} Tidak Patuh</span>
-            <span className="text-stone-300">·</span>
+            <span className="text-stone-300 dark:text-stone-700">·</span>
+            <span className="text-rose-600 dark:text-rose-400 font-semibold">{nonCompliantCount} Tidak Patuh</span>
+            <span className="text-stone-300 dark:text-stone-700">·</span>
             <span>{12 - applicableTotal} T/B</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-stone-600">Skor Pematuhan:</span>
+            <span className="text-xs font-semibold text-stone-600 dark:text-stone-400">Skor Pematuhan:</span>
             <div
               className={`flex items-center gap-1 font-bold text-sm px-2.5 py-1 rounded-lg ${
                 currentScore >= 90
-                  ? 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
                   : currentScore >= 75
-                  ? 'bg-amber-100 text-amber-800'
-                  : 'bg-rose-100 text-rose-800'
+                  ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                  : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
               }`}
             >
               <Percent className="w-3.5 h-3.5" />
@@ -354,31 +354,31 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                 key={item.id}
                 className={`p-4 rounded-xl border transition-all ${
                   ans.status === 'Tidak Patuh'
-                    ? 'border-rose-200 bg-rose-50/40'
-                    : 'border-stone-200 bg-stone-50/70 hover:bg-stone-50'
+                    ? 'border-rose-200 dark:border-rose-900/60 bg-rose-50/40 dark:bg-rose-950/40'
+                    : 'border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-800/60 hover:bg-stone-50 dark:hover:bg-stone-800/90'
                 }`}
               >
                 {/* Header row: Item name and 3-way toggle */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-stone-200 text-stone-700 text-xs font-bold flex items-center justify-center shrink-0">
+                      <span className="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-bold flex items-center justify-center shrink-0">
                         {item.id}
                       </span>
-                      <h4 className="font-bold text-sm text-stone-900">{item.name}</h4>
+                      <h4 className="font-bold text-sm text-stone-900 dark:text-stone-100">{item.name}</h4>
                     </div>
-                    <p className="text-xs text-stone-500 mt-1 pl-7">{item.desc}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 pl-7">{item.desc}</p>
                   </div>
 
                   {/* 3-Way Segmented Control */}
-                  <div className="flex items-center gap-1 p-1 bg-stone-200/70 rounded-lg shrink-0 self-start sm:self-center">
+                  <div className="flex items-center gap-1 p-1 bg-stone-200/70 dark:bg-stone-900 rounded-lg shrink-0 self-start sm:self-center border border-transparent dark:border-stone-700">
                     <button
                       type="button"
                       onClick={() => handleStatusChange(item.id, 'Patuh')}
-                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1 ${
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1 cursor-pointer ${
                         ans.status === 'Patuh'
                           ? 'bg-emerald-600 text-white shadow-xs'
-                          : 'text-stone-700 hover:text-stone-900'
+                          : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                       }`}
                     >
                       <Check className="w-3 h-3" />
@@ -387,10 +387,10 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleStatusChange(item.id, 'Tidak Patuh')}
-                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1 ${
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1 cursor-pointer ${
                         ans.status === 'Tidak Patuh'
                           ? 'bg-rose-600 text-white shadow-xs'
-                          : 'text-stone-700 hover:text-stone-900'
+                          : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                       }`}
                     >
                       <X className="w-3 h-3" />
@@ -399,10 +399,10 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleStatusChange(item.id, 'Tidak Berkenaan')}
-                      className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition ${
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
                         ans.status === 'Tidak Berkenaan'
                           ? 'bg-stone-600 text-white shadow-xs'
-                          : 'text-stone-600 hover:text-stone-900'
+                          : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
                       }`}
                     >
                       <span>T/B</span>
@@ -412,10 +412,10 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
 
                 {/* Temperature input for temp items */}
                 {item.type === 'temp' && (
-                  <div className="mt-3 pt-3 border-t border-stone-200/80 flex flex-wrap items-center gap-3 pl-7">
+                  <div className="mt-3 pt-3 border-t border-stone-200/80 dark:border-stone-700/80 flex flex-wrap items-center gap-3 pl-7">
                     <div className="flex items-center gap-2">
-                      <Thermometer className="w-4 h-4 text-amber-700" />
-                      <label className="text-xs font-semibold text-stone-700">
+                      <Thermometer className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                      <label className="text-xs font-semibold text-stone-700 dark:text-stone-300">
                         Bacaan Suhu ({item.unit}):
                       </label>
                       <input
@@ -426,16 +426,16 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                           handleFieldChange(item.id, 'temp', e.target.value)
                         }
                         placeholder="cth: 3.5"
-                        className="w-24 px-2.5 py-1.5 text-xs rounded-md border border-stone-300 bg-white font-mono"
+                        className="w-24 px-2.5 py-1.5 text-xs rounded-md border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 font-mono"
                       />
                     </div>
                     {tempGuideline && (
-                      <span className="text-[11px] text-stone-500 font-medium">
+                      <span className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
                         {tempGuideline}
                       </span>
                     )}
                     {tempWarning && (
-                      <span className="text-[11px] text-rose-700 bg-rose-100/90 px-2 py-0.5 rounded font-semibold flex items-center gap-1">
+                      <span className="text-[11px] text-rose-700 dark:text-rose-300 bg-rose-100/90 dark:bg-rose-950/70 px-2 py-0.5 rounded font-semibold flex items-center gap-1 border border-rose-300 dark:border-rose-800">
                         <AlertTriangle className="w-3 h-3" />
                         {tempWarning}
                       </span>
@@ -444,7 +444,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                 )}
 
                 {/* Notes and Image Capture */}
-                <div className="mt-3 pt-3 border-t border-stone-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3 pl-7">
+                <div className="mt-3 pt-3 border-t border-stone-200/80 dark:border-stone-700/80 grid grid-cols-1 sm:grid-cols-3 gap-3 pl-7">
                   <div className="sm:col-span-2">
                     <input
                       type="text"
@@ -457,28 +457,28 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                           ? 'Wajib: Nyatakan isu & tindakan pembetulan segera...'
                           : 'Catatan tambahan / ulasan kebersihan...'
                       }
-                      className={`w-full px-3 py-1.5 text-xs rounded-lg border bg-white focus:outline-hidden ${
+                      className={`w-full px-3 py-1.5 text-xs rounded-lg border bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden ${
                         ans.status === 'Tidak Patuh' && !ans.notes.trim()
-                          ? 'border-rose-400 focus:ring-1 focus:ring-rose-500'
-                          : 'border-stone-300 focus:ring-1 focus:ring-amber-800'
+                          ? 'border-rose-400 dark:border-rose-500 focus:ring-1 focus:ring-rose-500'
+                          : 'border-stone-300 dark:border-stone-700 focus:ring-1 focus:ring-amber-800 dark:focus:ring-amber-500'
                       }`}
                     />
                   </div>
 
                   <div>
                     {ans.image ? (
-                      <div className="flex items-center gap-2.5 bg-white p-1.5 rounded-xl border border-stone-200 shadow-2xs">
+                      <div className="flex items-center gap-2.5 bg-white dark:bg-stone-900 p-1.5 rounded-xl border border-stone-200 dark:border-stone-700 shadow-2xs">
                         <img
                           src={ans.image}
                           alt="Bukti 1:1"
-                          className="w-12 h-12 rounded-lg object-cover border border-amber-300 shadow-2xs shrink-0"
+                          className="w-12 h-12 rounded-lg object-cover border border-amber-300 dark:border-amber-700 shadow-2xs shrink-0"
                         />
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded w-fit">
+                          <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded w-fit">
                             Bukti 1:1 Siap
                           </span>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <label className="text-[11px] text-amber-800 hover:text-amber-950 font-semibold cursor-pointer">
+                            <label className="text-[11px] text-amber-800 dark:text-amber-400 hover:text-amber-950 dark:hover:text-amber-300 font-semibold cursor-pointer">
                               <span>Tukar</span>
                               <input
                                 type="file"
@@ -487,11 +487,11 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                                 className="hidden"
                               />
                             </label>
-                            <span className="text-stone-300">·</span>
+                            <span className="text-stone-300 dark:text-stone-600">·</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveImage(item.id)}
-                              className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold flex items-center gap-0.5"
+                              className="text-[11px] text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 font-semibold flex items-center gap-0.5 cursor-pointer"
                             >
                               <Trash2 className="w-3 h-3" />
                               <span>Padam</span>
@@ -500,8 +500,8 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
                         </div>
                       </div>
                     ) : (
-                      <label className="flex items-center justify-center gap-1.5 px-3 py-2 bg-stone-100 hover:bg-amber-50 text-stone-700 hover:text-amber-900 border border-stone-300 hover:border-amber-300 rounded-lg text-xs font-semibold cursor-pointer transition">
-                        <Camera className="w-3.5 h-3.5 text-amber-700" />
+                      <label className="flex items-center justify-center gap-1.5 px-3 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-amber-50 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 hover:text-amber-900 dark:hover:text-amber-300 border border-stone-300 dark:border-stone-700 hover:border-amber-300 rounded-lg text-xs font-semibold cursor-pointer transition">
+                        <Camera className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                         <span>Kamera / Muat Naik Gambar (1:1)</span>
                         <input
                           type="file"
@@ -519,8 +519,8 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="bg-stone-100 px-6 py-4 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-          <p className="text-xs text-stone-500 text-center sm:text-left">
+        <div className="bg-stone-100 dark:bg-stone-900/90 px-6 py-4 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+          <p className="text-xs text-stone-500 dark:text-stone-400 text-center sm:text-left">
             Pastikan semua catatan diisi tepat sebelum penghantaran pengesahan.
           </p>
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
@@ -528,7 +528,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
               type="button"
               disabled={isUploading}
               onClick={() => handleSave(true)}
-              className="px-4 py-2 rounded-lg text-xs font-semibold bg-stone-200 hover:bg-stone-300 text-stone-700 transition flex items-center gap-1.5 disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Simpan Draf</span>
@@ -537,7 +537,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({
               type="button"
               disabled={isUploading}
               onClick={() => handleSave(false)}
-              className="px-5 py-2 rounded-lg text-xs font-semibold bg-[#2da44e] hover:bg-[#2c974b] text-white transition shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+              className="px-5 py-2 rounded-lg text-xs font-semibold bg-[#2da44e] hover:bg-[#2c974b] text-white transition shadow-sm flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
               {isUploading ? (
                 <>

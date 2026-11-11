@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ms" class="h-full bg-stone-50">
+<html lang="ms" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,8 +12,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      try {
+        const theme = localStorage.getItem('rasaaqita_theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    </script>
   </head>
-  <body class="h-full text-stone-800 antialiased font-sans">
+  <body class="h-full bg-stone-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 antialiased font-sans transition-colors duration-200">
     <div id="root" class="h-full flex flex-col"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

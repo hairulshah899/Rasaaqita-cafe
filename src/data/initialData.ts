@@ -166,13 +166,31 @@ export const INITIAL_USERS: UserProfile[] = [
     outletId: 'all'
   },
   {
-    uid: 'u-owner-admin',
+    uid: 'u-owner-admin-1',
+    name: 'Hairul Shah (Admin)',
+    email: 'hairulshah@gmail.com',
+    role: 'admin',
+    outletId: 'all'
+  },
+  {
+    uid: 'u-owner-admin-2',
     name: 'Hairul Shah (Owner)',
     email: 'hairulshah899@gmail.com',
     role: 'admin',
     outletId: 'all'
   }
 ];
+
+export const ADMIN_EMAILS = [
+  'hairulshah@gmail.com',
+  'hairulshah899@gmail.com',
+];
+
+export const isOwnerAdminEmail = (email?: string | null): boolean => {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+  return ADMIN_EMAILS.includes(clean);
+};
 
 const createSamplePhoto = (title: string, sub: string, accentColor: string, iconLabel: string) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">

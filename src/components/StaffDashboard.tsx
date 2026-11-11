@@ -60,32 +60,32 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
     switch (status) {
       case 'Disahkan':
         return {
-          bg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-          icon: <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />,
+          bg: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800',
+          icon: <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
           label: 'Disahkan',
         };
       case 'Dihantar':
         return {
-          bg: 'bg-blue-100 text-blue-800 border-blue-200',
-          icon: <Clock className="w-3.5 h-3.5 text-blue-600" />,
+          bg: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800',
+          icon: <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />,
           label: 'Menunggu Semakan',
         };
       case 'Perlu Pembetulan':
         return {
-          bg: 'bg-rose-100 text-rose-800 border-rose-200',
-          icon: <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />,
+          bg: 'bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800',
+          icon: <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />,
           label: 'Perlu Pembetulan',
         };
       case 'Draf':
         return {
-          bg: 'bg-stone-200 text-stone-700 border-stone-300',
-          icon: <ClipboardList className="w-3.5 h-3.5 text-stone-600" />,
+          bg: 'bg-stone-200 text-stone-700 border-stone-300 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700',
+          icon: <ClipboardList className="w-3.5 h-3.5 text-stone-600 dark:text-stone-400" />,
           label: 'Draf Disimpan',
         };
       default:
         return {
-          bg: 'bg-stone-100 text-stone-600 border-stone-200',
-          icon: <Clock className="w-3.5 h-3.5 text-stone-400" />,
+          bg: 'bg-stone-100 text-stone-600 border-stone-200 dark:bg-stone-800/80 dark:text-stone-400 dark:border-stone-700',
+          icon: <Clock className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />,
           label: 'Belum Mula',
         };
     }
@@ -94,25 +94,25 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   return (
     <div className="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Top Welcome Card */}
-      <div className="bg-white rounded-2xl shadow-xs border border-stone-200 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-xs border border-stone-200 dark:border-stone-800 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#923b1b] bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#923b1b] dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded-full border border-amber-200/60 dark:border-amber-800/40">
               Mod Staf Operasi
             </span>
-            <span className="text-xs text-stone-400">·</span>
-            <span className="text-xs text-stone-500 font-mono">
+            <span className="text-xs text-stone-400 dark:text-stone-600">·</span>
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">
               Tarikh: {new Date().toLocaleDateString('ms-MY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-stone-900">
+          <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
             Selamat Bertugas, {currentUser.name}
           </h2>
-          <div className="flex items-center gap-2 mt-1 text-sm text-stone-600">
-            <Store className="w-4 h-4 text-amber-700" />
+          <div className="flex items-center gap-2 mt-1 text-sm text-stone-600 dark:text-stone-400">
+            <Store className="w-4 h-4 text-amber-700 dark:text-amber-400" />
             <span>Outlet Ditugaskan: </span>
-            <span className="font-semibold text-stone-900">{currentOutlet.name}</span>
-            <span className="text-stone-400">({currentOutlet.code})</span>
+            <span className="font-semibold text-stone-900 dark:text-stone-100">{currentOutlet.name}</span>
+            <span className="text-stone-400 dark:text-stone-500">({currentOutlet.code})</span>
           </div>
         </div>
 
@@ -120,11 +120,11 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
         <div className="flex items-center gap-3">
           {currentUser.outletId === 'all' && (
             <div className="flex flex-col text-right">
-              <label className="text-[11px] text-stone-500 font-medium">Tukar Cawangan Semasa:</label>
+              <label className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">Tukar Cawangan Semasa:</label>
               <select
                 value={currentOutlet.id}
                 onChange={(e) => onSelectOutlet(e.target.value)}
-                className="mt-1 px-3 py-1.5 rounded-lg border border-stone-300 text-xs font-semibold bg-stone-50 text-stone-800"
+                className="mt-1 px-3 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 text-xs font-semibold bg-stone-50 dark:bg-stone-800 text-stone-800 dark:text-stone-100"
               >
                 {outlets.map((o) => (
                   <option key={o.id} value={o.id}>
@@ -138,7 +138,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
             type="button"
             onClick={onRefresh}
             title="Segar semula status"
-            className="p-2 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 transition"
+            className="p-2 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -148,11 +148,11 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
       {/* 3 Operational Sessions for Today */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold text-base text-stone-900 flex items-center gap-2">
-            <ClipboardList className="w-4 h-4 text-amber-800" />
+          <h3 className="font-bold text-base text-stone-900 dark:text-stone-100 flex items-center gap-2">
+            <ClipboardList className="w-4 h-4 text-amber-800 dark:text-amber-400" />
             <span>Pemeriksaan 3 Sesi Operasi Hari Ini ({todayStr})</span>
           </h3>
-          <span className="text-xs text-stone-500">12 Titik Kritikal Setiap Sesi</span>
+          <span className="text-xs text-stone-500 dark:text-stone-400">12 Titik Kritikal Setiap Sesi</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -165,11 +165,11 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
             return (
               <div
                 key={sess.type}
-                className="bg-white rounded-2xl shadow-xs border border-stone-200 p-5 flex flex-col justify-between hover:border-amber-300/80 transition"
+                className="bg-white dark:bg-stone-900 rounded-2xl shadow-xs border border-stone-200 dark:border-stone-800 p-5 flex flex-col justify-between hover:border-amber-300/80 dark:hover:border-amber-700/60 transition"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-extrabold text-lg text-stone-900 tracking-tight">
+                    <span className="font-extrabold text-lg text-stone-900 dark:text-stone-100 tracking-tight">
                       {sess.type}
                     </span>
                     <span
@@ -180,21 +180,21 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                     </span>
                   </div>
 
-                  <p className="text-xs font-semibold text-amber-900 mb-1">{sess.label}</p>
-                  <p className="text-xs text-stone-500 leading-relaxed mb-4">{sess.desc}</p>
+                  <p className="text-xs font-semibold text-amber-900 dark:text-amber-300 mb-1">{sess.label}</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed mb-4">{sess.desc}</p>
 
                   {/* Score & Warning box if returned */}
-                  <div className="pt-3 border-t border-stone-100 space-y-2">
+                  <div className="pt-3 border-t border-stone-100 dark:border-stone-800 space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-stone-500">Skor Pematuhan:</span>
-                      <span className="font-bold text-sm text-stone-900 font-mono">
+                      <span className="text-stone-500 dark:text-stone-400">Skor Pematuhan:</span>
+                      <span className="font-bold text-sm text-stone-900 dark:text-stone-100 font-mono">
                         {existing ? `${existing.score}%` : 'Belum dinilai'}
                       </span>
                     </div>
 
                     {existing?.status === 'Perlu Pembetulan' && existing.supervisorNotes && (
-                      <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2">
-                        <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                      <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-2">
+                        <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                         <div>
                           <strong className="block text-[11px] uppercase tracking-wide">
                             Arahan Pembetulan Penyelia:
@@ -210,13 +210,13 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenChecklist(sess.type)}
-                    className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-xs ${
+                    className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer ${
                       existing?.status === 'Perlu Pembetulan'
                         ? 'bg-rose-600 hover:bg-rose-700 text-white'
                         : existing?.status === 'Disahkan'
-                        ? 'bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200'
+                        ? 'bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700'
                         : existing?.status === 'Dihantar'
-                        ? 'bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200'
+                        ? 'bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 dark:text-blue-200 dark:border-blue-800'
                         : 'bg-[#773117] hover:bg-[#5e2713] text-amber-100'
                     }`}
                   >
@@ -239,23 +239,23 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
       </div>
 
       {/* Historical Submissions Table */}
-      <div className="bg-white rounded-2xl shadow-xs border border-stone-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
+      <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-xs border border-stone-200 dark:border-stone-800 overflow-hidden transition-colors">
+        <div className="px-6 py-4 border-b border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/80 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-800" />
-            <h3 className="font-bold text-sm text-stone-900">
+            <Clock className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+            <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
               Rekod Pemeriksaan {currentOutlet.name}
             </h3>
           </div>
-          <span className="text-xs text-stone-500">
-            Jumlah rekod: <strong className="text-stone-800">{outletReports.length}</strong>
+          <span className="text-xs text-stone-500 dark:text-stone-400">
+            Jumlah rekod: <strong className="text-stone-800 dark:text-stone-200">{outletReports.length}</strong>
           </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-stone-100/70 text-stone-600 uppercase text-[11px] font-semibold border-b border-stone-200">
+              <tr className="bg-stone-100/70 dark:bg-stone-800/60 text-stone-600 dark:text-stone-300 uppercase text-[11px] font-semibold border-b border-stone-200 dark:border-stone-800">
                 <th className="py-3 px-6">Sesi</th>
                 <th className="py-3 px-4">Tarikh & Waktu</th>
                 <th className="py-3 px-4">Staf Pelapor</th>
@@ -265,10 +265,10 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                 <th className="py-3 px-6 text-right">Tindakan</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-200">
+            <tbody className="divide-y divide-stone-200 dark:divide-stone-800">
               {outletReports.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-stone-400">
+                  <td colSpan={7} className="py-8 text-center text-stone-400 dark:text-stone-500">
                     Tiada rekod pemeriksaan untuk outlet ini lagi. Sila klik &apos;Mula Pemeriksaan&apos; di atas.
                   </td>
                 </tr>
@@ -276,18 +276,18 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                 outletReports.map((r) => {
                   const badge = getStatusBadge(r.status);
                   return (
-                    <tr key={r.id} className="hover:bg-stone-50/80 transition">
-                      <td className="py-3 px-6 font-bold text-stone-900 font-mono">
+                    <tr key={r.id} className="hover:bg-stone-50/80 dark:hover:bg-stone-800/50 transition">
+                      <td className="py-3 px-6 font-bold text-stone-900 dark:text-stone-100 font-mono">
                         {r.session}
                       </td>
-                      <td className="py-3 px-4 text-stone-600">
+                      <td className="py-3 px-4 text-stone-600 dark:text-stone-300">
                         <span>{r.date}</span>
-                        {r.time && <span className="text-stone-400 ml-1">· {r.time}</span>}
+                        {r.time && <span className="text-stone-400 dark:text-stone-500 ml-1">· {r.time}</span>}
                       </td>
-                      <td className="py-3 px-4 text-stone-800 font-medium">
+                      <td className="py-3 px-4 text-stone-800 dark:text-stone-200 font-medium">
                         {r.staffName}
                       </td>
-                      <td className="py-3 px-4 text-center font-bold font-mono text-stone-900">
+                      <td className="py-3 px-4 text-center font-bold font-mono text-stone-900 dark:text-stone-100">
                         {r.score}%
                       </td>
                       <td className="py-3 px-4">
@@ -298,14 +298,14 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                           <span>{r.status}</span>
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-stone-600 italic max-w-xs truncate">
+                      <td className="py-3 px-4 text-stone-600 dark:text-stone-300 italic max-w-xs truncate">
                         {r.supervisorNotes || '-'}
                       </td>
                       <td className="py-3 px-6 text-right">
                         <button
                           type="button"
                           onClick={() => onOpenChecklist(r.session)}
-                          className="px-3 py-1 rounded-md text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 transition"
+                          className="px-3 py-1 rounded-md text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition cursor-pointer"
                         >
                           Buka
                         </button>

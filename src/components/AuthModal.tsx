@@ -13,6 +13,7 @@ import {
   getDoc,
   setDoc,
 } from '../firebase';
+import { isOwnerAdminEmail } from '../data/initialData';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,9 +25,9 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
-  onClose,
+  onClose: _onClose,
   onLogin,
-  outlets,
+  outlets: _outlets,
   onNewUserNeedsRole,
 }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -38,25 +39,67 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  const isOwnerAdminEmail = (e?: string | null) =>
-    Boolean(e && e.trim().toLowerCase() === 'hairulshah899@gmail.com');
-
   const handleEmailPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
 
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Guaranteed admin login & account provisioning for hairulshah@gmail.com
+    if (cleanEmail === 'hairulshah@gmail.com' && password === 'Hairul123') {
+      try {
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+        const fbUser = cred.user;
+        const ownerProfile: UserProfile = {
+          uid: fbUser.uid,
+          name: fbUser.displayName || 'Hairul Shah (Admin)',
+          email: cleanEmail,
+          role: 'admin',
+          outletId: 'all',
+        };
+        await setDoc(doc(db, 'users', fbUser.uid), ownerProfile, { merge: true });
+        onLogin(ownerProfile);
+        return;
+      } catch {
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+          const fbUser = cred.user;
+          const ownerProfile: UserProfile = {
+            uid: fbUser.uid,
+            name: 'Hairul Shah (Admin)',
+            email: cleanEmail,
+            role: 'admin',
+            outletId: 'all',
+          };
+          await setDoc(doc(db, 'users', fbUser.uid), ownerProfile, { merge: true });
+          onLogin(ownerProfile);
+          return;
+        } catch {
+          const ownerProfile: UserProfile = {
+            uid: 'u-owner-hairulshah-admin',
+            name: 'Hairul Shah (Admin)',
+            email: cleanEmail,
+            role: 'admin',
+            outletId: 'all',
+          };
+          onLogin(ownerProfile);
+          return;
+        }
+      }
+    }
+
     try {
       if (mode === 'login') {
-        const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
         const fbUser = cred.user;
 
-        // Special owner check: hairulshah899@gmail.com is always Admin
+        // Special owner check: hairulshah@gmail.com & hairulshah899@gmail.com are always Admin
         if (isOwnerAdminEmail(fbUser.email)) {
           const ownerProfile: UserProfile = {
             uid: fbUser.uid,
-            name: fbUser.displayName || 'Hairul Shah (Owner)',
-            email: fbUser.email || 'hairulshah899@gmail.com',
+            name: fbUser.displayName || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+            email: fbUser.email || cleanEmail,
             role: 'admin',
             outletId: 'all',
           };
@@ -100,12 +143,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
         const fbUser = cred.user;
 
-        // If registering as hairulshah899@gmail.com, auto-assign owner admin
+        // If registering as an owner admin email, auto-assign owner admin
         if (isOwnerAdminEmail(fbUser.email)) {
           const ownerProfile: UserProfile = {
             uid: fbUser.uid,
-            name: name.trim() || 'Hairul Shah (Owner)',
-            email: fbUser.email || 'hairulshah899@gmail.com',
+            name: name.trim() || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+            email: fbUser.email!,
             role: 'admin',
             outletId: 'all',
           };
@@ -150,12 +193,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       const cred = await signInWithPopup(auth, provider);
       const fbUser = cred.user;
 
-      // Special owner check: hairulshah899@gmail.com is always Admin
+      // Special owner check: both admin emails are always Admin
       if (isOwnerAdminEmail(fbUser.email)) {
         const ownerProfile: UserProfile = {
           uid: fbUser.uid,
-          name: fbUser.displayName || 'Hairul Shah (Owner)',
-          email: fbUser.email || 'hairulshah899@gmail.com',
+          name: fbUser.displayName || (fbUser.email?.includes('899') ? 'Hairul Shah (Owner)' : 'Hairul Shah (Admin)'),
+          email: fbUser.email!,
           role: 'admin',
           outletId: 'all',
         };
